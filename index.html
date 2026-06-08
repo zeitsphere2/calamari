@@ -816,6 +816,136 @@
     </style>
 </head>
 <body>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Access</title>
+    <link rel="icon" href="slope.png">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #000;
+            color: #fff;
+            font-family: Consolas, monospace;
+        }
+
+        #lockscreen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 999999;
+        }
+
+        #lockscreen-inner {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        #prompt {
+            font-size: 14px;
+        }
+
+        #typed {
+            margin-top: 6px;
+            font-size: 14px;
+            white-space: pre;
+        }
+
+        #error {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #ff4d4d;
+            display: none;
+        }
+
+        #lockscreen.fade-out {
+            opacity: 0;
+            transition: opacity .4s ease;
+            pointer-events: none;
+        }
+
+        #watermark {
+            position: fixed;
+            right: 12px;
+            bottom: 8px;
+            font-size: 12px;
+            opacity: .4;
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="customMusic" src="739991_Creo---Sphere.mp3" loop></audio>
+
+    <div id="lockscreen">
+        <div id="lockscreen-inner">
+            <div id="prompt">Enter Access Code:</div>
+            <div id="typed"></div>
+            <div id="error">ACCESS DENIED</div>
+        </div>
+
+        <div id="watermark">made by adam</div>
+    </div>
+
+    <script>
+        const ACCESS_CODE = "XCFE83";
+        let buffer = "";
+
+        document.addEventListener("keydown", e => {
+            const lock = document.getElementById("lockscreen");
+            if (!lock) return;
+
+            if (e.key === "Enter") {
+                if (buffer === ACCESS_CODE) unlock();
+                else {
+                    document.getElementById("error").style.display = "block";
+                    buffer = "";
+                    document.getElementById("typed").textContent = "";
+                }
+                return;
+            }
+
+            if (e.key === "Backspace") {
+                buffer = buffer.slice(0, -1);
+                document.getElementById("typed").textContent = buffer.replace(/./g, "•");
+                return;
+            }
+
+            if (e.key.length === 1) {
+                buffer += e.key;
+                document.getElementById("typed").textContent = buffer.replace(/./g, "•");
+            }
+        });
+
+        function unlock() {
+            const lock = document.getElementById("lockscreen");
+            lock.classList.add("fade-out");
+            setTimeout(() => lock.remove(), 400);
+
+            const music = document.getElementById("customMusic");
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const source = ctx.createMediaElementSource(music);
+            const gain = ctx.createGain();
+
+            gain.gain.value = 4;
+
+            source.connect(gain).connect(ctx.destination);
+
+            music.volume = 1.0;
+            music.playbackRate = 1;
+            music.play().catch(() => {});
+            ctx.resume();
+        }
+    </script>
+
+</body>
+</html>
+
     <div class="game-container">
         <div class="table">
             <div class="info-panel">
